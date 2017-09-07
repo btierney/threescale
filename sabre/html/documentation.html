@@ -1,0 +1,75 @@
+<div id="SabreDocs">
+<h1>Documentation</h1>
+
+<p>Use our live documentation to learn about the Echo API</p>
+
+{% active_docs version: "2.0" %}
+
+{% assign specs = 'echo, employee-swagger' %}
+
+<!-- Main container for rendering Swagger UI specs -->
+<div id="swagger-ui-containers">
+</div>
+
+<script type="text/javascript">
+  
+  $(function () {
+
+    function swaggerSectionHtml(domId) {
+      var html = '<div class="swagger-section"><div id="' + domId + '" class="swagger-ui-wrap"></div></div>'
+      return html;
+    }
+    
+    function getSwaggerSpecUrl(specSystemName) {
+      // check parent location, if it's iframe
+      var loc = window.location.href == 'about:srcdoc' ? window.parent.location : window.location;
+      var url = loc.protocol+'//'+loc.hostname+(loc.port ? ':'+loc.port : '');
+      url = url + "/swagger/spec/" + specSystemName + ".json";
+      return url;
+    }
+    
+    function loadSwagger(specSystemName, domId) {
+      
+      // create DOM element
+      $("#swagger-ui-containers").append(swaggerSectionHtml(domId));
+      
+      var swaggerObjName = 'swaggerUi' + specSystemName;
+      var domPreCodeId = '#' + domId + ' pre code';
+      var swaggerObj = new SwaggerUi({
+        url: getSwaggerSpecUrl(specSystemName),
+        dom_id: domId,
+        supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+        onComplete: function(swaggerApi, swaggerUi) {
+          $(domPreCodeId).each(function(i, e) {hljs.highlightBlock(e)});
+        },
+        onFailure: function(data) {
+          log("Unable to LoadSwaggerUI");
+        },
+        docExpansion: "list",
+        transport: function(httpClient, obj) {
+          return ApiDocsProxy.execute(httpClient, obj);
+        }
+      });
+      window[swaggerObjName] = swaggerObj;
+      window[swaggerObjName].load();
+      
+    }
+    
+    // Remove the default swagger-section created by the "active_docs" liquid tag
+    $("#swagger-ui-container").parent().remove();
+    
+    var specsStr = '{{ specs }}';
+    var specs = specsStr.split(',');
+    specs = specs.filter(Boolean); // remove empty elements
+    
+    for (var i=0; i < specs.length; i++) {
+      var specSystemName = $.trim(specs[i]);
+      if (specSystemName != '') {
+        var domId = "swagger-ui-container-" + specSystemName;
+        loadSwagger(specSystemName, domId);
+      }
+    } 
+     
+  });
+  
+</script>
