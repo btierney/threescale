@@ -1,1 +1,46 @@
-{"info":{"title":"Employee List","description":"This is a list of employees","version":"1.0.0"},"openapi":"3.0.0"}
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Employee List",
+    "description": "This is a list of employees",
+    "license": {
+      "name": "MIT License",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/employees": {
+      "get": {
+        "summary": "Get Employee",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/employees/{id}": {
+      "get": {}
+    }
+  },
+  "components": {
+    "schemas": {
+      "EmployeeAPI": {
+        "title": "Root Type for EmployeeAPI",
+        "description": "The root of the EmployeeAPI type's schema.",
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "dept": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
