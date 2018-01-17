@@ -1,6 +1,6 @@
 { "employees" :
 [
-{ "id" : 1, "name" : "Awalt, Frank"},
+{ "id" : 1, "name" : "Awalt, Frank", "title": "CEO"},
 { "id" : 2, "name" : "Brennenstuhl, Susan"},
 { "id" : 3, "name" : "Boulds, Zach"},
 { "id" : 4, "name" : "Bankhead, Elissa"},
