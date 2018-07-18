@@ -1,0 +1,117 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Latex Products",
+    "description": "List of Vandelay Latex Products",
+    "version": "1.0.0"
+  },
+  "host": "my-json-server.typicode.com",
+  "basePath": "/btierney/threescale",
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "tags": [
+    {
+      "name": "products",
+      "description": "latex product list"
+    }
+  ],
+  "paths": {
+    "/latexproducts": {
+      "get": {
+        "tags": [
+          "latexproducts"
+        ],
+        "summary": "List",
+        "parameters": [
+          {
+            "name": "user_key",
+            "in": "query",
+            "description": "API/User Key",
+            "required": true,
+            "type": "string",
+            "x-data-threescale-name": "user_keys"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of latex products",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "x-dbtype": "int",
+                    "x-nullable": false,
+                    "x-primary-key": true
+                  },
+                  "name": {
+                    "type": "string",
+                    "x-dbtype": "varchar",
+                    "x-nullable": false,
+                    "maxLength": 255
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/latexproducts/{id}": {
+      "get": {
+        "tags": [
+          "employee"
+        ],
+        "summary": "Read",
+        "parameters": [
+          {
+            "name": "user_key",
+            "in": "query",
+            "description": "API/User Key",
+            "required": true,
+            "type": "string",
+            "x-data-threescale-name": "user_keys"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identifier for product.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested item.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "x-dbtype": "int",
+                  "x-nullable": false,
+                  "x-primary-key": true
+                },
+                "name": {
+                  "type": "string",
+                  "x-dbtype": "varchar",
+                  "x-nullable": false,
+                  "maxLength": 255
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
