@@ -1,3 +1,23 @@
+{  "latexproducts" : [
+{"id": 0, "name": Gloves"},
+{"id": 1, "name": Balloons"},
+{"id": 2, "name": Latex Mattresses"},
+{"id": 3, "name": Spandex"},
+{"id": 4, "name": Bandages (Adhesives)"},
+{"id": 5, "name": Therapy / Resistance bands"},
+{"id": 6, "name": Elastic"},
+{"id": 7, "name": Pacifiers/Baby Bottle Nipples"},
+{"id": 8, "name": Dishwashing gloves"},
+{"id": 9, "name": Dental dams"},
+{"id": 10, "name": Rubber bands"},
+{"id": 11, "name": Blood pressure cuffs"},
+{"id": 12, "name": Stethoscope tubeing"},
+{"id": 13, "name": Tourniquets"},
+{"id": 14, "name": Red Rubber Catheters"},
+{"id": 15, "name": Vial stoppers"},
+{"id": 16, "name": Dishwashing gloves"},
+{"id": 17, "name": Erasers"}
+],
 { "employees" :
 [
 { "id" : 1, "name" : "Awalt, Frank", "title": "CEO"},
