@@ -1,0 +1,7 @@
+<h3>Vandelay Latex - Swagger 2.0 Documentation</h3>
+{% active_docs version: "2.0" services: "vandelay-swagger" %}
+<script type="text/javascript">
+$(function () {
+window.swaggerUi.load();
+});
+</script>
