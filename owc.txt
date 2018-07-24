@@ -1,0 +1,1028 @@
+No valid API key has been set, notifications will not be sent
+ActiveMerchant MODE set to 'production'
+[Core] Using http://backend-listener:3000/internal/ as URL
+Initializing Fields AssociationCollection extensions
+OpenIdAuthentication.store is nil. Using in-memory store.
+Enabled backend interaction for ReferrerFilter
+Enabled backend interaction for ApplicationKey
+Connected to mysql2://root@system-mysql/system
+Recreating trigger, see log/production.log
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.9ms)  DROP TRIGGER IF EXISTS accounts_tenant_id
+
+   (46.4ms)  CREATE TRIGGER accounts_tenant_id BEFORE INSERT ON accounts FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.buyer THEN
+  SET NEW.tenant_id = NEW.provider_account_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (2.3ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (5.5ms)  DROP TRIGGER IF EXISTS audits_tenant_id
+
+   (33.9ms)  CREATE TRIGGER audits_tenant_id BEFORE INSERT ON audits FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.provider_id <> master_id THEN
+  SET NEW.tenant_id = NEW.provider_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.7ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (8.3ms)  DROP TRIGGER IF EXISTS alerts_tenant_id
+
+   (35.4ms)  CREATE TRIGGER alerts_tenant_id BEFORE INSERT ON alerts FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM accounts WHERE id = NEW.account_id AND NOT master);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.4ms)  DROP TRIGGER IF EXISTS api_docs_services_tenant_id
+
+   (35.3ms)  CREATE TRIGGER api_docs_services_tenant_id BEFORE INSERT ON api_docs_services FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.account_id <> master_id THEN
+  SET NEW.tenant_id = NEW.account_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (8.3ms)  DROP TRIGGER IF EXISTS application_keys_tenant_id
+
+   (33.5ms)  CREATE TRIGGER application_keys_tenant_id BEFORE INSERT ON application_keys FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM cinstances WHERE id = NEW.application_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.6ms)  DROP TRIGGER IF EXISTS billing_strategies_tenant_id
+
+   (36.6ms)  CREATE TRIGGER billing_strategies_tenant_id BEFORE INSERT ON billing_strategies FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.account_id <> master_id THEN
+  SET NEW.tenant_id = NEW.account_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.2ms)  DROP TRIGGER IF EXISTS cinstances_tenant_id
+
+   (31.7ms)  CREATE TRIGGER cinstances_tenant_id BEFORE INSERT ON cinstances FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM plans WHERE id = NEW.plan_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (8.8ms)  DROP TRIGGER IF EXISTS configuration_values_tenant_id
+
+   (31.1ms)  CREATE TRIGGER configuration_values_tenant_id BEFORE INSERT ON configuration_values FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.configurable_type = 'Account' AND NEW.configurable_id <> master_id THEN
+  SET NEW.tenant_id = NEW.configurable_id;
+ELSEIF NEW.configurable_type = 'Service' THEN
+  SET NEW.tenant_id = (SELECT tenant_id FROM services WHERE id = NEW.configurable_id AND tenant_id <> master_id);
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.5ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.2ms)  DROP TRIGGER IF EXISTS end_user_plans_tenant_id
+
+   (38.3ms)  CREATE TRIGGER end_user_plans_tenant_id BEFORE INSERT ON end_user_plans FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM services WHERE id = NEW.service_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.7ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.8ms)  DROP TRIGGER IF EXISTS features_tenant_id
+
+   (31.0ms)  CREATE TRIGGER features_tenant_id BEFORE INSERT ON features FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.featurable_type = 'Account' AND NEW.featurable_id <> master_id THEN
+  SET NEW.tenant_id = NEW.featurable_id;
+ELSEIF NEW.featurable_type = 'Service' THEN
+  SET NEW.tenant_id = (SELECT tenant_id FROM services WHERE id = NEW.featurable_id AND tenant_id <> master_id);
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.0ms)  DROP TRIGGER IF EXISTS features_plans_tenant_id
+
+   (32.0ms)  CREATE TRIGGER features_plans_tenant_id BEFORE INSERT ON features_plans FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM features WHERE id = NEW.feature_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.5ms)  DROP TRIGGER IF EXISTS fields_definitions_tenant_id
+
+   (30.9ms)  CREATE TRIGGER fields_definitions_tenant_id BEFORE INSERT ON fields_definitions FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.account_id <> master_id THEN
+  SET NEW.tenant_id = NEW.account_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.8ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (5.6ms)  DROP TRIGGER IF EXISTS forums_tenant_id
+
+   (35.9ms)  CREATE TRIGGER forums_tenant_id BEFORE INSERT ON forums FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.account_id <> master_id THEN
+  SET NEW.tenant_id = NEW.account_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.7ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.8ms)  DROP TRIGGER IF EXISTS invitations_tenant_id
+
+   (41.9ms)  CREATE TRIGGER invitations_tenant_id BEFORE INSERT ON invitations FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM accounts WHERE id = NEW.account_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.8ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.5ms)  DROP TRIGGER IF EXISTS invoices_tenant_id
+
+   (38.1ms)  CREATE TRIGGER invoices_tenant_id BEFORE INSERT ON invoices FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.provider_account_id <> master_id THEN
+  SET NEW.tenant_id = NEW.provider_account_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.7ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.6ms)  DROP TRIGGER IF EXISTS line_items_tenant_id
+
+   (29.7ms)  CREATE TRIGGER line_items_tenant_id BEFORE INSERT ON line_items FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM invoices WHERE id = NEW.invoice_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.7ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.0ms)  DROP TRIGGER IF EXISTS mail_dispatch_rules_tenant_id
+
+   (34.6ms)  CREATE TRIGGER mail_dispatch_rules_tenant_id BEFORE INSERT ON mail_dispatch_rules FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM accounts WHERE id = NEW.account_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.7ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.5ms)  DROP TRIGGER IF EXISTS message_recipients_tenant_id
+
+   (34.1ms)  CREATE TRIGGER message_recipients_tenant_id BEFORE INSERT ON message_recipients FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM messages WHERE id = NEW.message_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.8ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.7ms)  DROP TRIGGER IF EXISTS messages_tenant_id
+
+   (32.9ms)  CREATE TRIGGER messages_tenant_id BEFORE INSERT ON messages FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM accounts WHERE id = NEW.sender_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.8ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (5.8ms)  DROP TRIGGER IF EXISTS metrics_tenant_id
+
+   (33.6ms)  CREATE TRIGGER metrics_tenant_id BEFORE INSERT ON metrics FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM services WHERE id = NEW.service_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.7ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (20.8ms)  DROP TRIGGER IF EXISTS moderatorships_tenant_id
+
+   (33.6ms)  CREATE TRIGGER moderatorships_tenant_id BEFORE INSERT ON moderatorships FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM forums WHERE id = NEW.forum_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.7ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (9.6ms)  DROP TRIGGER IF EXISTS payment_transactions_tenant_id
+
+   (46.8ms)  CREATE TRIGGER payment_transactions_tenant_id BEFORE INSERT ON payment_transactions FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM invoices WHERE id = NEW.invoice_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.7ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.9ms)  DROP TRIGGER IF EXISTS plan_metrics_tenant_id
+
+   (34.0ms)  CREATE TRIGGER plan_metrics_tenant_id BEFORE INSERT ON plan_metrics FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM plans WHERE id = NEW.plan_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.5ms)  DROP TRIGGER IF EXISTS plans_tenant_id
+
+   (33.2ms)  CREATE TRIGGER plans_tenant_id BEFORE INSERT ON plans FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.type = 'AccountPlan' AND NEW.issuer_id <> master_id THEN
+  SET NEW.tenant_id = NEW.issuer_id;
+ELSEIF NEW.type = 'ApplicationPlan' OR NEW.type = 'ServicePlan' THEN
+  SET NEW.tenant_id = (SELECT tenant_id FROM services WHERE id = NEW.issuer_id AND tenant_id <> master_id);
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.9ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (11.8ms)  DROP TRIGGER IF EXISTS posts_tenant_id
+
+   (39.5ms)  CREATE TRIGGER posts_tenant_id BEFORE INSERT ON posts FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM forums WHERE id = NEW.forum_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.7ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (9.6ms)  DROP TRIGGER IF EXISTS pricing_rules_tenant_id
+
+   (34.1ms)  CREATE TRIGGER pricing_rules_tenant_id BEFORE INSERT ON pricing_rules FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM plans WHERE id = NEW.plan_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.7ms)  DROP TRIGGER IF EXISTS profiles_tenant_id
+
+   (49.2ms)  CREATE TRIGGER profiles_tenant_id BEFORE INSERT ON profiles FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM accounts WHERE id = NEW.account_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (16.2ms)  DROP TRIGGER IF EXISTS referrer_filters_tenant_id
+
+   (37.0ms)  CREATE TRIGGER referrer_filters_tenant_id BEFORE INSERT ON referrer_filters FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM cinstances WHERE id = NEW.application_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.8ms)  DROP TRIGGER IF EXISTS services_tenant_id
+
+   (34.0ms)  CREATE TRIGGER services_tenant_id BEFORE INSERT ON services FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.account_id <> master_id THEN
+    SET NEW.tenant_id = NEW.account_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.5ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.4ms)  DROP TRIGGER IF EXISTS settings_tenant_id
+
+   (40.2ms)  CREATE TRIGGER settings_tenant_id BEFORE INSERT ON settings FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM accounts WHERE id = NEW.account_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.8ms)  DROP TRIGGER IF EXISTS authentication_providers_tenant_id
+
+   (33.6ms)  CREATE TRIGGER authentication_providers_tenant_id BEFORE INSERT ON authentication_providers FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM accounts WHERE id = NEW.account_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.5ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.5ms)  DROP TRIGGER IF EXISTS slugs_tenant_id
+
+   (37.5ms)  CREATE TRIGGER slugs_tenant_id BEFORE INSERT ON slugs FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.sluggable_type = 'Profile' THEN
+  SET NEW.tenant_id = (SELECT tenant_id FROM profiles WHERE id = NEW.sluggable_id AND tenant_id <> master_id);
+ELSEIF NEW.sluggable_type = 'Service' THEN
+  SET NEW.tenant_id = (SELECT tenant_id FROM services WHERE id = NEW.sluggable_id AND tenant_id <> master_id);
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.5ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.6ms)  DROP TRIGGER IF EXISTS topic_categories_tenant_id
+
+   (35.8ms)  CREATE TRIGGER topic_categories_tenant_id BEFORE INSERT ON topic_categories FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM forums WHERE id = NEW.forum_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.5ms)  DROP TRIGGER IF EXISTS topics_tenant_id
+
+   (35.8ms)  CREATE TRIGGER topics_tenant_id BEFORE INSERT ON topics FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM forums WHERE id = NEW.forum_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.5ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.6ms)  DROP TRIGGER IF EXISTS usage_limits_tenant_id
+
+   (34.5ms)  CREATE TRIGGER usage_limits_tenant_id BEFORE INSERT ON usage_limits FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM metrics WHERE id = NEW.metric_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.5ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (8.2ms)  DROP TRIGGER IF EXISTS user_topics_tenant_id
+
+   (34.3ms)  CREATE TRIGGER user_topics_tenant_id BEFORE INSERT ON user_topics FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM topics WHERE id = NEW.topic_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.7ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.0ms)  DROP TRIGGER IF EXISTS users_tenant_id
+
+   (35.7ms)  CREATE TRIGGER users_tenant_id BEFORE INSERT ON users FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM accounts WHERE id = NEW.account_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.8ms)  DROP TRIGGER IF EXISTS web_hooks_tenant_id
+
+   (33.9ms)  CREATE TRIGGER web_hooks_tenant_id BEFORE INSERT ON web_hooks FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.account_id <> master_id THEN
+    SET NEW.tenant_id = NEW.account_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.5ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.6ms)  DROP TRIGGER IF EXISTS categories_tenant_id
+
+   (36.8ms)  CREATE TRIGGER categories_tenant_id BEFORE INSERT ON categories FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.account_id <> master_id THEN
+  SET NEW.tenant_id = NEW.account_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (11.8ms)  DROP TRIGGER IF EXISTS category_types_tenant_id
+
+   (35.2ms)  CREATE TRIGGER category_types_tenant_id BEFORE INSERT ON category_types FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.account_id <> master_id THEN
+  SET NEW.tenant_id = NEW.account_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.7ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.7ms)  DROP TRIGGER IF EXISTS tags_tenant_id
+
+   (36.1ms)  CREATE TRIGGER tags_tenant_id BEFORE INSERT ON tags FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.account_id <> master_id THEN
+  SET NEW.tenant_id = NEW.account_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.5ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.9ms)  DROP TRIGGER IF EXISTS taggings_tenant_id
+
+   (34.9ms)  CREATE TRIGGER taggings_tenant_id BEFORE INSERT ON taggings FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM tags WHERE id = NEW.tag_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.5ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.9ms)  DROP TRIGGER IF EXISTS legal_terms_tenant_id
+
+   (35.8ms)  CREATE TRIGGER legal_terms_tenant_id BEFORE INSERT ON legal_terms FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.account_id <> master_id THEN
+  SET NEW.tenant_id = NEW.account_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (8.6ms)  DROP TRIGGER IF EXISTS legal_term_versions_tenant_id
+
+   (33.9ms)  CREATE TRIGGER legal_term_versions_tenant_id BEFORE INSERT ON legal_term_versions FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM legal_terms WHERE id = NEW.legal_term_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.7ms)  DROP TRIGGER IF EXISTS legal_term_acceptances_tenant_id
+
+   (32.9ms)  CREATE TRIGGER legal_term_acceptances_tenant_id BEFORE INSERT ON legal_term_acceptances FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM legal_terms WHERE id = NEW.legal_term_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.5ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.5ms)  DROP TRIGGER IF EXISTS legal_term_bindings_tenant_id
+
+   (39.8ms)  CREATE TRIGGER legal_term_bindings_tenant_id BEFORE INSERT ON legal_term_bindings FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM legal_terms WHERE id = NEW.legal_term_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.4ms)  DROP TRIGGER IF EXISTS member_permissions_tenant_id
+
+   (33.3ms)  CREATE TRIGGER member_permissions_tenant_id BEFORE INSERT ON member_permissions FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM users WHERE id = NEW.user_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.5ms)  DROP TRIGGER IF EXISTS cms_sections_tenant_id
+
+   (30.8ms)  CREATE TRIGGER cms_sections_tenant_id BEFORE INSERT ON cms_sections FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.provider_id <> master_id THEN
+  SET NEW.tenant_id = NEW.provider_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (8.7ms)  DROP TRIGGER IF EXISTS cms_permissions_tenant_id
+
+   (33.7ms)  CREATE TRIGGER cms_permissions_tenant_id BEFORE INSERT ON cms_permissions FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM cms_groups WHERE id = NEW.group_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.6ms)  DROP TRIGGER IF EXISTS cms_groups_tenant_id
+
+   (31.1ms)  CREATE TRIGGER cms_groups_tenant_id BEFORE INSERT ON cms_groups FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.provider_id <> master_id THEN
+  SET NEW.tenant_id = NEW.provider_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.5ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.3ms)  DROP TRIGGER IF EXISTS cms_group_sections_tenant_id
+
+   (33.4ms)  CREATE TRIGGER cms_group_sections_tenant_id BEFORE INSERT ON cms_group_sections FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM cms_groups WHERE id = NEW.group_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.3ms)  DROP TRIGGER IF EXISTS cms_templates_tenant_id
+
+   (35.0ms)  CREATE TRIGGER cms_templates_tenant_id BEFORE INSERT ON cms_templates FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF (master_id IS NULL OR NEW.provider_id <> master_id) THEN
+  SET NEW.tenant_id = NEW.provider_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.5ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.2ms)  DROP TRIGGER IF EXISTS cms_templates_versions_tenant_id
+
+   (31.6ms)  CREATE TRIGGER cms_templates_versions_tenant_id BEFORE INSERT ON cms_templates_versions FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.provider_id <> master_id THEN
+  SET NEW.tenant_id = NEW.provider_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.9ms)  DROP TRIGGER IF EXISTS cms_files_tenant_id
+
+   (34.1ms)  CREATE TRIGGER cms_files_tenant_id BEFORE INSERT ON cms_files FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.provider_id <> master_id THEN
+  SET NEW.tenant_id = NEW.provider_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.5ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.6ms)  DROP TRIGGER IF EXISTS log_entries_tenant_id
+
+   (32.2ms)  CREATE TRIGGER log_entries_tenant_id BEFORE INSERT ON log_entries FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM accounts WHERE id = NEW.provider_id AND NOT master);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.5ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.7ms)  DROP TRIGGER IF EXISTS cms_redirects_tenant_id
+
+   (34.7ms)  CREATE TRIGGER cms_redirects_tenant_id BEFORE INSERT ON cms_redirects FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      IF NEW.provider_id <> master_id THEN
+  SET NEW.tenant_id = NEW.provider_id;
+END IF;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.5ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (7.1ms)  DROP TRIGGER IF EXISTS proxy_logs_tenant_id
+
+   (34.8ms)  CREATE TRIGGER proxy_logs_tenant_id BEFORE INSERT ON proxy_logs FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM accounts WHERE id = NEW.provider_id AND NOT master);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.3ms)  DROP TRIGGER IF EXISTS proxies_tenant_id
+
+   (34.6ms)  CREATE TRIGGER proxies_tenant_id BEFORE INSERT ON proxies FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM services WHERE id = NEW.service_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (11.9ms)  DROP TRIGGER IF EXISTS proxy_rules_tenant_id
+
+   (34.2ms)  CREATE TRIGGER proxy_rules_tenant_id BEFORE INSERT ON proxy_rules FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM proxies WHERE id = NEW.proxy_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (8.0ms)  DROP TRIGGER IF EXISTS provider_constraints_tenant_id
+
+   (37.0ms)  CREATE TRIGGER provider_constraints_tenant_id BEFORE INSERT ON provider_constraints FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = NEW.provider_id;
+
+    END IF;
+  END IF;
+END;
+
+
+  Account Load (0.6ms)  SELECT  `accounts`.* FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (6.3ms)  DROP TRIGGER IF EXISTS proxy_configs_tenant_id
+
+   (33.9ms)  CREATE TRIGGER proxy_configs_tenant_id BEFORE INSERT ON proxy_configs FOR EACH ROW BEGIN
+  DECLARE master_id numeric;
+  IF @disable_triggers IS NULL THEN
+    IF NEW.tenant_id IS NULL THEN
+      SET master_id = 1;
+      SET NEW.tenant_id = (SELECT tenant_id FROM proxies WHERE id = NEW.proxy_id AND tenant_id <> master_id);
+
+    END IF;
+  END IF;
+END;
+
+
+Recreated 61 triggers
+  ActiveRecord::SchemaMigration Load (2.7ms)  SELECT `schema_migrations`.* FROM `schema_migrations`
+   (0.2ms)  BEGIN
+  Account Exists (0.3ms)  SELECT  1 AS one FROM `accounts` WHERE `accounts`.`self_domain` = 'master.ngp-poc' LIMIT 1
+  Account Exists (0.4ms)  SELECT  1 AS one FROM `accounts` WHERE `accounts`.`master` = 1 LIMIT 1
+   (0.2ms)  ROLLBACK
+Not notifying due to an invalid api_key
+rake aborted!
+ActiveRecord::RecordInvalid: Validation failed: Admin domain has already been taken, Master can be only one
+/opt/system/vendor/bundle/ruby/2.3.0/gems/activerecord-4.2.9/lib/active_record/validations.rb:79:in `raise_record_invalid'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/activerecord-4.2.9/lib/active_record/validations.rb:43:in `save!'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/activerecord-4.2.9/lib/active_record/attribute_methods/dirty.rb:29:in `save!'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/activerecord-4.2.9/lib/active_record/transactions.rb:291:in `block in save!'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/activerecord-4.2.9/lib/active_record/transactions.rb:351:in `block in with_transaction_returning_status'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/activerecord-4.2.9/lib/active_record/connection_adapters/abstract/database_statements.rb:213:in `block in transaction'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/activerecord-4.2.9/lib/active_record/connection_adapters/abstract/transaction.rb:184:in `within_new_transaction'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/activerecord-4.2.9/lib/active_record/connection_adapters/abstract/database_statements.rb:213:in `transaction'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/activerecord-4.2.9/lib/active_record/transactions.rb:220:in `transaction'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/deadlock_retry-1.2.0/lib/deadlock_retry.rb:31:in `transaction_with_deadlock_handling'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/activerecord-4.2.9/lib/active_record/transactions.rb:348:in `with_transaction_returning_status'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/activerecord-4.2.9/lib/active_record/transactions.rb:291:in `save!'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/state_machines-activerecord-0.4.0/lib/state_machines/integrations/active_record.rb:505:in `block in save!'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/state_machines-activerecord-0.4.0/lib/state_machines/integrations/active_record.rb:520:in `block in around_save'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/state_machines-0.4.0/lib/state_machines/transition_collection.rb:150:in `block in run_actions'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/state_machines-0.4.0/lib/state_machines/transition_collection.rb:170:in `catch_exceptions'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/state_machines-0.4.0/lib/state_machines/transition_collection.rb:148:in `run_actions'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/state_machines-0.4.0/lib/state_machines/transition_collection.rb:133:in `run_callbacks'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/state_machines-0.4.0/lib/state_machines/transition_collection.rb:212:in `run_callbacks'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/state_machines-0.4.0/lib/state_machines/transition_collection.rb:63:in `block (2 levels) in perform'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/state_machines-0.4.0/lib/state_machines/transition_collection.rb:63:in `catch'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/state_machines-0.4.0/lib/state_machines/transition_collection.rb:63:in `block in perform'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/state_machines-0.4.0/lib/state_machines/transition_collection.rb:186:in `within_transaction'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/state_machines-0.4.0/lib/state_machines/transition_collection.rb:62:in `perform'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/state_machines-activerecord-0.4.0/lib/state_machines/integrations/active_record.rb:520:in `around_save'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/state_machines-activerecord-0.4.0/lib/state_machines/integrations/active_record.rb:505:in `save!'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/protected_attributes-1.1.4/lib/active_record/mass_assignment_security/validations.rb:17:in `create!'
+/opt/system/db/seeds.rb:14:in `<top (required)>'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/activesupport-4.2.9/lib/active_support/dependencies.rb:268:in `load'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/activesupport-4.2.9/lib/active_support/dependencies.rb:268:in `block in load'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/activesupport-4.2.9/lib/active_support/dependencies.rb:240:in `load_dependency'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/activesupport-4.2.9/lib/active_support/dependencies.rb:268:in `load'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/railties-4.2.9/lib/rails/engine.rb:547:in `load_seed'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/activerecord-4.2.9/lib/active_record/tasks/database_tasks.rb:253:in `load_seed'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/activerecord-4.2.9/lib/active_record/railties/databases.rake:173:in `block (2 levels) in <top (required)>'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/bugsnag-6.6.4/lib/bugsnag/integrations/rake.rb:18:in `execute_with_bugsnag'
+/opt/system/vendor/bundle/ruby/2.3.0/gems/rake-12.3.1/exe/rake:27:in `<top (required)>'
+Tasks: TOP => db:seed
+(See full trace by running task with --trace)
+sh-4.2$ 
+
