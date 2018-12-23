@@ -1,5 +1,5 @@
 {
-"contacts"  [
+"contacts" : [
 {"id":1,"first_name":"Evvie","last_name":"Savil","phone":"501-934-5176","rating":"Cold","company":"Zoombeat"},
 {"id":2,"first_name":"Dominga","last_name":"Saddleton","phone":"305-212-2679","rating":"Cold","company":"Tazz"},
 {"id":3,"first_name":"Heywood","last_name":"Pollock","phone":"519-851-6332","rating":"Hot","company":"Oyope"},
